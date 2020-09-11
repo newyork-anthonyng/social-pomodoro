@@ -6,8 +6,11 @@ const io = require('socket.io')(http);
 
 app.use(express.static(path.resolve(__dirname)));
 
+// TODO: use webpack to avoid duplication of EVENTS object.
 const EVENTS = {
-  JOINED: 'joined'
+  JOINED: 'joined',
+  PLAY: 'play',
+  PAUSE: 'pause'
 };
 
 io.on('connection', socket => {
@@ -19,6 +22,22 @@ io.on('connection', socket => {
     console.log(data);
 
     io.emit(EVENTS.JOINED, data);
+  });
+
+  socket.on(EVENTS.PLAY, (data) => {
+    console.log("*************");
+    console.log("EVENTS.PLAY");
+    console.log(data);
+
+    io.emit(EVENTS.PLAY, data);
+  });
+
+  socket.on(EVENTS.PAUSE, (data) => {
+    console.log("*************");
+    console.log("EVENTS.PAUSE");
+    console.log(data);
+
+    io.emit(EVENTS.PAUSE, data);
   });
 });
 
