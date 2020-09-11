@@ -1,9 +1,11 @@
 const INITIAL_TIME = 42;
+
 const stateMachine = {
   context: {
     time: INITIAL_TIME,
     timer: null
   },
+  subscribers: new Map(),
   state: 'PAUSED',
   PLAY: {
     on: {
@@ -31,6 +33,9 @@ const stateMachine = {
         fn: () => {
           stateMachine.context.timer = setInterval(() => {
             console.log(stateMachine.context.time--);
+            stateMachine.subscribers.forEach(sub => {
+              sub(stateMachine.context.time);
+            });
           }, 1000);
         }
       },
@@ -53,6 +58,12 @@ const stateMachine = {
       stateMachine.state = eventObject.target;
       eventObject.fn && eventObject.fn();
     }
+  },
+  subscribe: (subscriber) => {
+    stateMachine.subscribers.set(subscriber, subscriber);
+  },
+  unsubscribe: (subscriber) => {
+    stateMachine.subscribers.delete(subscriber);
   }
 };
 

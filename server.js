@@ -16,6 +16,13 @@ const EVENTS = {
   TICK: 'tick'
 };
 
+stateMachine.subscribe((time) => {
+  io.emit(EVENTS.TICK, { time });
+  console.log("😀");
+  console.log(time);
+  console.log("😀");
+});
+
 io.on('connection', socket => {
   console.log('a user connected');
 
