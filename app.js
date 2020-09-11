@@ -29,6 +29,18 @@ class MyAwesomeSocket {
       console.log(data);
       console.groupEnd("EVENTS.PAUSE");
     });
+
+    this.socket.on(EVENTS.RESET, (data) => {
+      console.group("EVENTS.RESET");
+      console.log(data);
+      console.groupEnd("EVENTS.RESET");
+    });
+
+    this.socket.on(EVENTS.TICK, (data) => {
+      console.group("EVENTS.TICK");
+      console.log(data);
+      console.groupEnd("EVENTS.TICK");
+    });
   }
 
   join() {
@@ -52,12 +64,20 @@ class MyAwesomeSocket {
       { name: 'Anthony' }
     );
   }
+
+  reset() {
+    this.socket.emit(
+      EVENTS.RESET,
+      { name: 'Anthony' }
+    );
+  }
 }
 
 const myAwesomeSocket = new MyAwesomeSocket();
 
 const $play = document.querySelector('.js-play');
 const $pause = document.querySelector('.js-pause');
+const $reset = document.querySelector('.js-reset');
 
 $play.addEventListener('click', () => {
   myAwesomeSocket.play();
@@ -65,4 +85,8 @@ $play.addEventListener('click', () => {
 
 $pause.addEventListener('click', () => {
   myAwesomeSocket.pause();
+});
+
+$reset.addEventListener('click', () => {
+  myAwesomeSocket.reset();
 });

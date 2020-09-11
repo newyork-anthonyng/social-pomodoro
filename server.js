@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+const stateMachine = require('./state-machine.js');
 
 app.use(express.static(path.resolve(__dirname)));
 
@@ -10,7 +11,9 @@ app.use(express.static(path.resolve(__dirname)));
 const EVENTS = {
   JOINED: 'joined',
   PLAY: 'play',
-  PAUSE: 'pause'
+  PAUSE: 'pause',
+  RESTART: 'restart',
+  TICK: 'tick'
 };
 
 io.on('connection', socket => {
@@ -28,6 +31,7 @@ io.on('connection', socket => {
     console.log("*************");
     console.log("EVENTS.PLAY");
     console.log(data);
+    stateMachine.send('PLAY');
 
     io.emit(EVENTS.PLAY, data);
   });
@@ -36,6 +40,16 @@ io.on('connection', socket => {
     console.log("*************");
     console.log("EVENTS.PAUSE");
     console.log(data);
+    stateMachine.send('PAUSE');
+
+    io.emit(EVENTS.PAUSE, data);
+  });
+
+  socket.on(EVENTS.RESET, (data) => {
+    console.log("*************");
+    console.log("EVENTS.RESET");
+    console.log(data);
+    stateMachine.send('RESET');
 
     io.emit(EVENTS.PAUSE, data);
   });
