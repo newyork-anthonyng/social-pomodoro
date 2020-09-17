@@ -1,4 +1,47 @@
-const INITIAL_TIME = 42;
+const INITIAL_TIME = 25 * 60;
+
+const EVENTS = {
+  PLAY: 'play',
+  PAUSE: 'pause',
+  RESET: 'reset',
+  TICK: 'tick'
+};
+
+function createTick(time) {
+  return {
+    type: EVENTS.TICK,
+    data: {
+      time
+    }
+  };
+}
+
+function createPlay(time) {
+  return {
+    type: EVENTS.PLAY,
+    data: {
+      time
+    }
+  };
+}
+
+function createPause(time) {
+  return {
+    type: EVENTS.PAUSE,
+    data: {
+      time
+    }
+  };
+}
+
+function createReset(time) {
+  return {
+    type: EVENTS.RESET,
+    data: {
+      time
+    }
+  };
+}
 
 const stateMachine = {
   context: {
@@ -9,11 +52,14 @@ const stateMachine = {
   state: 'PAUSED',
   PLAY: {
     on: {
-      PAUSE: {
-        target: 'PAUSED',
+      PAUSE: { target: 'PAUSED',
         fn: () => {
           clearInterval(stateMachine.context.timer);
           stateMachine.context.timer = null;
+
+          stateMachine.subscribers.forEach(sub => {
+            sub(createPause(stateMachine.context.time));
+          });
         }
       },
       RESET: {
@@ -22,6 +68,10 @@ const stateMachine = {
           clearInterval(stateMachine.context.timer);
           stateMachine.context.timer = null;
           stateMachine.context.time = INITIAL_TIME;
+
+          stateMachine.subscribers.forEach(sub => {
+            sub(createReset(stateMachine.context.time));
+          });
         }
       }
     }
@@ -33,10 +83,19 @@ const stateMachine = {
         fn: () => {
           stateMachine.context.timer = setInterval(() => {
             console.log(stateMachine.context.time--);
+
             stateMachine.subscribers.forEach(sub => {
-              sub(stateMachine.context.time);
+              sub(createTick(stateMachine.context.time));
             });
+
+            if (stateMachine.context.time === 0) {
+              stateMachine.send('PAUSE');
+            }
           }, 1000);
+
+          stateMachine.subscribers.forEach(sub => {
+            sub(createPlay(stateMachine.context.time));
+          });
         }
       },
       RESET: {
@@ -45,6 +104,10 @@ const stateMachine = {
           clearInterval(stateMachine.context.timer);
           stateMachine.context.timer = null;
           stateMachine.context.time = INITIAL_TIME;
+
+          stateMachine.subscribers.forEach(sub => {
+            sub(createReset(stateMachine.context.time));
+          });
         }
       }
     }

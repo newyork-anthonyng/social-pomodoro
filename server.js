@@ -12,53 +12,33 @@ const EVENTS = {
   JOINED: 'joined',
   PLAY: 'play',
   PAUSE: 'pause',
-  RESTART: 'restart',
+  RESET: 'reset',
   TICK: 'tick'
 };
 
-stateMachine.subscribe((time) => {
-  io.emit(EVENTS.TICK, { time });
-  console.log("😀");
-  console.log(time);
-  console.log("😀");
+stateMachine.subscribe((data) => {
+  // TODO: the subscribe event should be called whenever anything from state machine updates
+  io.emit(data.type, data.data);
+  console.log(data);
 });
 
 io.on('connection', socket => {
   console.log('a user connected');
 
   socket.on(EVENTS.JOINED, (data) => {
-    console.log("*************");
-    console.log("EVENTS.JOINED");
-    console.log(data);
-
     io.emit(EVENTS.JOINED, data);
   });
 
   socket.on(EVENTS.PLAY, (data) => {
-    console.log("*************");
-    console.log("EVENTS.PLAY");
-    console.log(data);
     stateMachine.send('PLAY');
-
-    io.emit(EVENTS.PLAY, data);
   });
 
   socket.on(EVENTS.PAUSE, (data) => {
-    console.log("*************");
-    console.log("EVENTS.PAUSE");
-    console.log(data);
     stateMachine.send('PAUSE');
-
-    io.emit(EVENTS.PAUSE, data);
   });
 
   socket.on(EVENTS.RESET, (data) => {
-    console.log("*************");
-    console.log("EVENTS.RESET");
-    console.log(data);
     stateMachine.send('RESET');
-
-    io.emit(EVENTS.PAUSE, data);
   });
 });
 
