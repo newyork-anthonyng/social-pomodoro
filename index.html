@@ -6,7 +6,21 @@
 
   <body>
     <h1>Pomodoros</h1>
+    <h2 class="js-time"></h2>
+
+    <button class="js-play">Play</button>
+    <button class="js-pause">Pause</button>
+    <button class="js-reset">Reset</button>
+
+    <ul class="js-action-list">
+    </ul>
+
+    <template class="js-action-item-template">
+      <li>
+      </li>
+    </template>
+
     <script type="text/javascript" src="/node_modules/socket.io-client/dist/socket.io.js"></script>
-    <script type="text/javascript" src="/app.js"></script>
+    <script type="module" src="/app.js"></script>
   </body>
 </html>
